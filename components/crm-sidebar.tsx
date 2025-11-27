@@ -1,94 +1,98 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Plus, MessageSquare, Clock } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button";
+import { MessageSquare, HelpCircle, Plus } from "lucide-react";
 
 interface Conversation {
-  id: string
-  title: string
-  date: string
-  messages: number
+  id: string;
+  title: string;
+  date: string;
+  messageCount: number;
 }
 
 interface CrmSidebarProps {
-  conversations: Conversation[]
-  selectedConversation: string | null
-  onSelectConversation: (id: string | null) => void
-  onAddConversation: (title: string) => void
-  isOpen: boolean
-  onToggle: () => void
+  conversations: Conversation[];
+  selectedConversation: string | null;
+  onSelectConversation: (id: string) => void;
+  onNewConversation: () => void;
+  currentView: "chat" | "docs";
+  onViewChange: (view: "chat" | "docs") => void;
 }
 
 export default function CrmSidebar({
   conversations,
   selectedConversation,
   onSelectConversation,
-  isOpen,
-  onToggle,
+  onNewConversation,
+  currentView,
+  onViewChange,
 }: CrmSidebarProps) {
   return (
-    <>
-      <div
-        className={cn(
-          "hidden md:flex flex-col h-screen w-64 bg-card border-r border-border/40 transition-all duration-300",
-          isOpen ? "translate-x-0" : "-translate-x-full",
-        )}
-      >
-        {/* Header */}
-        <div className="border-b border-border/40 p-4">
+    <div className="w-64 bg-background border-r flex flex-col h-full">
+      {/* Header */}
+      <div className="p-4 border-b">
+        <Button onClick={onNewConversation} className="w-full mb-4">
+          <Plus className="w-4 h-4 mr-2" />
+          Nouvelle conversation
+        </Button>
+
+        <div className="flex gap-2">
           <Button
-            variant="secondary"
-            className="w-full justify-start gap-2 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary border-0"
+            variant={currentView === "chat" ? "default" : "outline"}
+            onClick={() => onViewChange("chat")}
+            className="flex-1"
+            size="sm"
           >
-            <Plus className="w-4 h-4" />
-            <span className="text-sm font-medium">Nouvelle conversation</span>
+            <MessageSquare className="w-4 h-4 mr-2" />
+            Chat
           </Button>
-        </div>
-
-        {/* Conversations List */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-2">
-          {conversations.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <Clock className="w-8 h-8 mx-auto mb-2 opacity-30" />
-              <p className="text-xs">Aucune conversation</p>
-            </div>
-          ) : (
-            conversations.map((conv) => (
-              <button
-                key={conv.id}
-                onClick={() => onSelectConversation(conv.id)}
-                className={cn(
-                  "w-full text-left p-3 rounded-lg transition-colors text-sm",
-                  selectedConversation === conv.id
-                    ? "bg-primary/10 border border-primary/20 text-foreground"
-                    : "hover:bg-muted/50 border border-border/20 text-muted-foreground hover:text-foreground",
-                )}
-              >
-                <div className="flex items-start gap-2 min-w-0">
-                  <MessageSquare className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                  <div className="min-w-0 flex-1">
-                    <p className="font-medium truncate">{conv.title}</p>
-                    <p className="text-xs opacity-70">{conv.date}</p>
-                  </div>
-                </div>
-              </button>
-            ))
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className="border-t border-border/40 p-4 space-y-2">
-          <div className="bg-card-foreground/5 rounded-lg p-3">
-            <p className="text-xs font-medium text-foreground mb-1">À propos</p>
-            <p className="text-xs text-muted-foreground">
-              Chatbot IA pour service client avec traitement du langage naturel.
-            </p>
-          </div>
+          <Button
+            variant={currentView === "docs" ? "default" : "outline"}
+            onClick={() => onViewChange("docs")}
+            className="flex-1"
+            size="sm"
+          >
+            <HelpCircle className="w-4 h-4 mr-2" />
+            Docs
+          </Button>
         </div>
       </div>
 
-      {isOpen && <div className="md:hidden fixed inset-0 bg-black/50 z-40" onClick={() => onToggle()} />}
-    </>
-  )
+      {/* Conversations */}
+      <div className="flex-1 overflow-y-auto p-4">
+        <h3 className="font-semibold text-sm mb-3">Conversations</h3>
+
+        <div className="space-y-2">
+          {conversations.map((conv) => (
+            <button
+              key={conv.id}
+              onClick={() => onSelectConversation(conv.id)}
+              className={`w-full text-left p-3 rounded-lg border text-sm transition-colors ${
+                selectedConversation === conv.id
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-card hover:bg-accent border-border"
+              }`}
+            >
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <p className="font-medium truncate">{conv.title}</p>
+                  <p className="text-xs opacity-70 mt-1">{conv.date}</p>
+                </div>
+                <span className="bg-background text-foreground text-xs px-2 py-1 rounded ml-2">
+                  {conv.messageCount}
+                </span>
+              </div>
+            </button>
+          ))}
+
+          {conversations.length === 0 && (
+            <div className="text-center text-muted-foreground py-8">
+              <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-50" />
+              <p className="text-sm">Aucune conversation</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
