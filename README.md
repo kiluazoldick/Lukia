@@ -1,6 +1,3 @@
-## 📁 **README.md**
-
-```markdown
 # Lukia CRM - Chatbot Intelligent pour Service Client
 
 ## 🎯 Présentation du Projet
@@ -104,4 +101,7 @@ L'application stocke localement :
 ---
 
 _Solution de démonstration pour chatbot CRM avec intelligence artificielle_
+
+```
+
 ```
