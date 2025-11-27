@@ -101,7 +101,3 @@ L'application stocke localement :
 ---
 
 _Solution de démonstration pour chatbot CRM avec intelligence artificielle_
-
-```
-
-```
